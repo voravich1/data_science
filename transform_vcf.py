@@ -2,6 +2,7 @@
 import pandas as pd
 from scipy.spatial.distance import squareform, pdist
 import seaborn as sns
+import stat_utility
 
 #input = "./test_data/master_extract.txt"
 #input = r'G:\TB_BGI\all_sample_res\BGI_174_combine_extract.txt'
@@ -9,6 +10,7 @@ import seaborn as sns
 input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/sv_master_combine_extract.txt"
 outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/dendogram.pdf"
 treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/test2.tre"
+itolFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/label_cluster.itol.txt"
 
 first_line = True
 column = list()
@@ -84,25 +86,82 @@ ivl.reverse()
 tree = to_tree(Z,False)
 newick_string = getNewick(tree, "", tree.dist, leaf_names=df_t.index)
 
-with open(treFile, "w") as text_file:
-    text_file.write(newick_string)
+#with open(treFile, "w") as text_file:
+ #   text_file.write(newick_string)
 
-
-color_new = dn['color_list']
-dn['color_list'] = ['#0000ff','#0000ff','#0000ff','r','r','r','r','r','r','r','r','r','r','r','r','r','r','r','#000000']
 
 #plt.show()
 
-plt.savefig(outputDendogram, dpi=1200)
+#plt.savefig(outputDendogram, dpi=1200)
 
 max_d = 8.5
 cluster = fcluster(Z, max_d, criterion='distance')
-
+index = df_t.index
+idx_l = index.tolist()
 dn_full = dendrogram(Z, labels=df_t.index, orientation='left')
-label = dn_full['ivl']
 
-new_color_label = list()
-#for idx, value in enumerate(label):
+
+## create cluster dict (mapping cluster group and sample name by index order of list)
+cluster_dict = dict()
+for idx, group in enumerate(cluster):
+    sample_name = column[idx]
+
+    if group in cluster_dict:
+        dummy_list = cluster_dict[group]
+        dummy_list.append(sample_name)
+
+        cluster_dict[group] = dummy_list
+    else:
+        dummy_list = [sample_name]
+        cluster_dict[group] = dummy_list
+
+##################################################
+
+# Tranform Data in to every possible combination (one group VS other group) and do Ttest
+a = dict()
+
+def without_keys(input_dict,exclude_key_dict):
+    return {k:v for k,v in input_dict.items() if k not in exclude_key_dict}
+
+
+list_pvalue_df_res = []
+list_tscore_df_res = []
+
+for group in cluster_dict:
+    combination_name = "group " + str(group) + " vs other"
+    sample_list_groupA = cluster_dict[group]
+    exclude_key_dict = {group}
+    other_group_dict = without_keys(cluster_dict,exclude_key_dict)
+    list_other_group = other_group_dict.values()
+    sample_list_groupB = []
+    for l in list_other_group:
+        for item in l:
+            sample_list_groupB.append(item)
+
+    dataframe_groupA = df_t.loc[sample_list_groupA]
+    dataframe_groupB = df_t.loc[sample_list_groupB]
+
+    # Do ttest for this combination
+    pvalue_res, tscore_res = stat_utility.multipleColumnTtest(dataframe_groupA, dataframe_groupB)
+
+    pvalue_res.index = [combination_name]
+    tscore_res.index = [combination_name]
+
+    list_pvalue_df_res.append(pvalue_res)
+    list_tscore_df_res.append(tscore_res)
+
+pvalue_res_all = pd.concat(list_pvalue_df_res)
+tscore_res_all = pd.concat(list_tscore_df_res)
+
+########################################################
+
+group = df_t.loc[['ERR752267','ERR718415']]
+print(group)
+
+n_array = group.iloc[:,0].values
+print(n_array)
+
+print()
 
 
 
