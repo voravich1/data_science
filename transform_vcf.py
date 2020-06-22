@@ -7,11 +7,13 @@ import stat_utility
 #input = "./test_data/master_extract.txt"
 #input = r'G:\TB_BGI\all_sample_res\BGI_174_combine_extract.txt'
 #input = r'C:\Users\vorav\Downloads\1188_mantaV1_4_combine_extract.txt'
-input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/sv_master_combine_extract.txt"
-outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/dendogram.pdf"
-treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/test2.tre"
-itolFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/label_cluster.itol.txt"
+input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
+outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/dendogram.pdf"
+treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/test2.tre"
+itolFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/label_cluster.itol.txt"
+pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_cluster.csv"
 
+homo_only = True
 first_line = True
 column = list()
 index = list()
@@ -33,6 +35,15 @@ with open(input) as f:
             #print(line)
 df = pd.DataFrame(data,columns=column,index=index)
 df_t = df.transpose()
+
+
+
+if homo_only == True:
+    for (columnName,columnData) in df_t.iteritems():
+        df_t.loc[df_t[columnName] < 2, columnName] = 0
+
+
+    #df_t = (df_t.iloc[:,:] == 1).replace(int(0)).astype(int)
 #print(df)
 #print(df_t)
 #print(df_t.iloc[:, 1:])
@@ -43,6 +54,7 @@ df_t = df.transpose()
 #print(dist_matrix)
 #sns.set(font_scale=1)
 #sns.heatmap(dist_matrix.iloc[0:30,0:30], xticklabels=True, yticklabels=True, linewidths=.1, cmap="Greens")
+
 
 
 aon = df_t.index
@@ -155,11 +167,15 @@ tscore_res_all = pd.concat(list_tscore_df_res)
 
 ########################################################
 
-group = df_t.loc[['ERR752267','ERR718415']]
-print(group)
 
-n_array = group.iloc[:,0].values
-print(n_array)
+pvalue_res_all.to_csv(pvalue_csv_file)
+
+
+#group = df_t.loc[['ERR752267','ERR718415']]
+#print(group)
+
+#n_array = group.iloc[:,0].values
+#print(n_array)
 
 print()
 

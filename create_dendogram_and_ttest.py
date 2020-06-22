@@ -1,17 +1,47 @@
+#!/usr/bin/env python
+
+"""This program is use for 2 purpose
+    1. create dendrogram from any VCF extract DATA
+    What is "VCF extract DATA"?
+    VCF extract DATA will be in format like this
+        1st row is header ==> POS|Sample1|Sample2|Sample3|...|SampleN
+        column POS contain information of chr and position merge into single string EX "1:100-300" mean chr1, start=100, end=300
+        other column contain representation number of genotype that got from GT in VCF. 0 => homoREF, 1=>hetero, 2=>homoALT
+
+    2. Do ttest statistic for finding significant varaint between two population. Do on all possible combination of population
+
+    "color_th" is major factor that indicate how many poppulation will be for this analysis. High value of color_th will give low number
+    population.
+
+    An easy way to get VCF extract DATA for SV vcf such as manta SV is using
+    "run_svtk_standard_cluster_extract_vcf_huge_sample_set_TB_only.sh" from sv_tb_pipeline
+"""
 
 import pandas as pd
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, to_tree
+import stat_utility
 import numpy as np
+
+__author__ = "Worawich Phornsiricharoenphant"
+__copyright__ = ""
+__credits__ = ["Worawich Phornsiricharonphant"]
+__license__ = "GPL-3.0"
+__version__ = "1.0"
+__maintainer__ = "Worawich Phornsiricharoenphant"
+__email__ = "worawich.ph@gmail.com"
+__status__ = "Development"
 
 #input = "./test_data/master_extract.txt"
 #input = r'G:\TB_BGI\all_sample_res\BGI_174_combine_extract.txt'
 #input = r'C:\Users\vorav\Downloads\1188_mantaV1_4_combine_extract.txt'
-input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/sv_master_combine_extract.txt"
-outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/dendogram.pdf"
-treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/scipy_dendrogram.tre"
-itol_ann = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/scipy_dendrogram.itol.txt"
-
+input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
+outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/dendogram.pdf"
+treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.tre"
+itol_ann = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.itol.txt"
+pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_cluster.csv"
+color_th = 8.5 # this treshold can be adjust it will effect clustering and group coloring on dendrogram
+homo_only = True # Homo flag ==> if True consider homo region by convert hetero value 1 to 0 (Will update better way to handle this later)
 ## function convert linkage resut to newick file
 # credit https://stackoverflow.com/questions/28222179/save-dendrogram-to-newick-format
 def getNewick(node, newick, parentdist, leaf_names):
@@ -52,6 +82,13 @@ df = pd.DataFrame(data,columns=column,index=index)
 df_t = df.transpose()
 ############################################################
 
+# Check Homo flag, If True we will convert hetero value 1 to 0 (Will update better way to handle this later)
+if homo_only == True:
+    for (columnName,columnData) in df_t.iteritems():
+        df_t.loc[df_t[columnName] < 2, columnName] = 0
+########################################################
+
+
 plt.figure(num=None, figsize=(60, 120), dpi=80, facecolor='w', edgecolor='k')
 
 # Do linkage function can be consider as calculate distance matrix (My understanding)
@@ -76,7 +113,7 @@ with open(treFile, "w") as text_file:
     text_file.write(newick_string)
 ###############################################
 
-# Extract cluster group. Make itol annotation foe cluster.
+# Extract cluster group. Make itol annotation for cluster.
 max_d = color_th
 cluster = fcluster(Z, max_d, criterion='distance')
 index = df_t.index
@@ -138,4 +175,54 @@ with open(itol_ann, "w") as text_file:
 ##############################################################################
 
 
+## create cluster dict (mapping cluster group and sample name by index order of list)
+cluster_dict = dict()
+for idx, group in enumerate(cluster):
+    sample_name = column[idx]
+
+    if group in cluster_dict:
+        dummy_list = cluster_dict[group]
+        dummy_list.append(sample_name)
+
+        cluster_dict[group] = dummy_list
+    else:
+        dummy_list = [sample_name]
+        cluster_dict[group] = dummy_list
+
+##################################################
+
+# Tranform Data in to every possible combination (one group VS other group) and do Ttest
+list_pvalue_df_res = []
+list_tscore_df_res = []
+
+for group in cluster_dict:
+    combination_name = "group " + str(group) + " vs other"
+    sample_list_groupA = cluster_dict[group]
+    exclude_key_dict = {group}
+    other_group_dict = stat_utility.without_keys(cluster_dict,exclude_key_dict)
+    list_other_group = other_group_dict.values()
+    sample_list_groupB = []
+    for l in list_other_group:
+        for item in l:
+            sample_list_groupB.append(item)
+
+    dataframe_groupA = df_t.loc[sample_list_groupA]
+    dataframe_groupB = df_t.loc[sample_list_groupB]
+
+    # Do ttest for this combination
+    pvalue_res, tscore_res = stat_utility.multipleColumnTtest(dataframe_groupA, dataframe_groupB)
+
+    pvalue_res.index = [combination_name]
+    tscore_res.index = [combination_name]
+
+    list_pvalue_df_res.append(pvalue_res)
+    list_tscore_df_res.append(tscore_res)
+
+pvalue_res_all = pd.concat(list_pvalue_df_res)
+tscore_res_all = pd.concat(list_tscore_df_res)
+
+########################################################
+
+
+pvalue_res_all.to_csv(pvalue_csv_file)
 

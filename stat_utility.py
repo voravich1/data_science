@@ -29,3 +29,6 @@ def multipleColumnTtest(dataframe_popA, dataframe_popB):
     dataframe_t_score_res = pd.DataFrame(row_tscore, columns=column_name, index=['t_score'])
 
     return dataframe_p_value_res, dataframe_t_score_res
+
+def without_keys(input_dict,exclude_key_dict):
+    return {k:v for k,v in input_dict.items() if k not in exclude_key_dict}
