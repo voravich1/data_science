@@ -12,6 +12,7 @@ outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/
 treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/test2.tre"
 itolFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/label_cluster.itol.txt"
 pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_cluster.csv"
+freq_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/freq_cluster.csv"
 
 homo_only = True
 first_line = True
@@ -138,6 +139,7 @@ def without_keys(input_dict,exclude_key_dict):
 
 list_pvalue_df_res = []
 list_tscore_df_res = []
+list_freq_df_res = []
 
 for group in cluster_dict:
     combination_name = "group " + str(group) + " vs other"
@@ -154,22 +156,42 @@ for group in cluster_dict:
     dataframe_groupB = df_t.loc[sample_list_groupB]
 
     # Do ttest for this combination
-    pvalue_res, tscore_res = stat_utility.multipleColumnTtest(dataframe_groupA, dataframe_groupB)
+    pvalue_res, tscore_res, freq_res = stat_utility.multipleColumnFisherTest(dataframe_groupA, dataframe_groupB)
 
     pvalue_res.index = [combination_name]
     tscore_res.index = [combination_name]
+    freq_res.index = [combination_name]
 
     list_pvalue_df_res.append(pvalue_res)
     list_tscore_df_res.append(tscore_res)
+    list_freq_df_res.append(freq_res)
 
 pvalue_res_all = pd.concat(list_pvalue_df_res)
 tscore_res_all = pd.concat(list_tscore_df_res)
+freq_res_all = pd.concat(list_freq_df_res)
 
 ########################################################
 
 
 pvalue_res_all.to_csv(pvalue_csv_file)
+freq_res_all.to_csv(freq_csv_file)
 
+pvalue_res_all_t = pvalue_res_all.transpose()
+
+
+for col_name, col_data in pvalue_res_all_t.iteritems():
+    sample_n = col_name
+    t = col_data[:] < 0.05
+
+    f = col_data[t]
+    np_data = f.to_numpy()
+
+    print(f)
+    print()
+
+test = pvalue_res_all_t[:] < 0.05
+
+filt = pvalue_res_all_t[test]
 
 #group = df_t.loc[['ERR752267','ERR718415']]
 #print(group)

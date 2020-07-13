@@ -39,9 +39,12 @@ input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch
 outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/dendogram.pdf"
 treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.tre"
 itol_ann = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.itol.txt"
-pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_cluster.csv"
-color_th = 8.5 # this treshold can be adjust it will effect clustering and group coloring on dendrogram
+pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_fisher_cluster.csv"
+freq_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/freq_cluster.csv"
+
+color_th = 8.5  # this treshold can be adjust it will effect clustering and group coloring on dendrogram
 homo_only = True # Homo flag ==> if True consider homo region by convert hetero value 1 to 0 (Will update better way to handle this later)
+ttest = False
 ## function convert linkage resut to newick file
 # credit https://stackoverflow.com/questions/28222179/save-dendrogram-to-newick-format
 def getNewick(node, newick, parentdist, leaf_names):
@@ -109,8 +112,8 @@ plt.savefig(outputDendogram, dpi=1200)
 tree = to_tree(Z,False)
 newick_string = getNewick(tree, "", tree.dist, leaf_names=df_t.index)
 
-with open(treFile, "w") as text_file:
-    text_file.write(newick_string)
+#with open(treFile, "w") as text_file:
+#    text_file.write(newick_string)
 ###############################################
 
 # Extract cluster group. Make itol annotation for cluster.
@@ -193,7 +196,8 @@ for idx, group in enumerate(cluster):
 
 # Tranform Data in to every possible combination (one group VS other group) and do Ttest
 list_pvalue_df_res = []
-list_tscore_df_res = []
+list_score_df_res = []
+list_freq_df_res = []
 
 for group in cluster_dict:
     combination_name = "group " + str(group) + " vs other"
@@ -209,20 +213,40 @@ for group in cluster_dict:
     dataframe_groupA = df_t.loc[sample_list_groupA]
     dataframe_groupB = df_t.loc[sample_list_groupB]
 
-    # Do ttest for this combination
-    pvalue_res, tscore_res = stat_utility.multipleColumnTtest(dataframe_groupA, dataframe_groupB)
+    # Do ttest or chi square for this combination
+    if ttest == True:
+        pvalue_res, score_res = stat_utility.multipleColumnTtest(dataframe_groupA, dataframe_groupB)
+        pvalue_res.index = [combination_name]
+        score_res.index = [combination_name]
 
-    pvalue_res.index = [combination_name]
-    tscore_res.index = [combination_name]
+        list_pvalue_df_res.append(pvalue_res)
+        list_score_df_res.append(score_res) ## list of dataframe of tscore
+    else:
+        pvalue_res, score_res, frequency_res = stat_utility.multipleColumnFisherTest(dataframe_groupA, dataframe_groupB)
 
-    list_pvalue_df_res.append(pvalue_res)
-    list_tscore_df_res.append(tscore_res)
+        pvalue_res.index = [combination_name]
+        score_res.index = [combination_name]
+        frequency_res.index = [combination_name]
 
-pvalue_res_all = pd.concat(list_pvalue_df_res)
-tscore_res_all = pd.concat(list_tscore_df_res)
+        list_pvalue_df_res.append(pvalue_res)
+        list_score_df_res.append(score_res) ## list of dataframe of odd ratio
+        list_freq_df_res.append(frequency_res)
+
+if ttest == True:
+    pvalue_res_all = pd.concat(list_pvalue_df_res)
+    score_res_all = pd.concat(list_score_df_res)
+
+    pvalue_res_all.to_csv(pvalue_csv_file)
+else:
+    pvalue_res_all = pd.concat(list_pvalue_df_res)
+    score_res_all = pd.concat(list_score_df_res)
+    freq_res_all = pd.concat(list_freq_df_res)
+
+    pvalue_res_all.to_csv(pvalue_csv_file)
+    freq_res_all.to_csv(freq_csv_file)
 
 ########################################################
 
 
-pvalue_res_all.to_csv(pvalue_csv_file)
+
 
