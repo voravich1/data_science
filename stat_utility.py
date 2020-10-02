@@ -34,6 +34,8 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
     p_value_res = list()
     odd_ratio_res = list()
     frequency_res = list()
+    freq_ratio_res = list()
+    marker_res = list()
 
     num_A , feature_A = dataframe_popA.shape
     num_B, feature_B = dataframe_popB.shape
@@ -75,7 +77,7 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
         contingency_table = [contingency_A, contingency_B]
         #############################
         ## Do fisher exact test. If p value < 0.05 mean popA and popB has significant different.
-        ## For more interpretation of the word significant different we may need to pbserve count of ALT and REF of both popA and B.
+        ## For more interpretation of the word significant different we may need to observe count of ALT and REF of both popA and B.
         ## In order to interprete that which population prefer ALT or REF
         odd_ratio, p_value = stats.fisher_exact(contingency_table)
         p_value_res.append(p_value)
@@ -83,6 +85,23 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
         #############################
         count_data = " (altA:refA|altB:refB," + str(count_A_alt) + ":" + str(count_A_ref) + "|" + str(count_B_alt) + ":" + str(count_B_ref) + ")"
         frequency_res.append(count_data)
+
+        ## ratio calculate
+        altA_ratio = count_A_alt / (count_A_alt + count_A_ref)
+        altB_ratio = count_B_alt / (count_B_alt + count_B_ref)
+        refA_ratio = count_A_ref / (count_A_alt + count_A_ref)
+        refB_ratio = count_B_ref / (count_B_alt + count_B_ref)
+        ratio_data = str(altA_ratio) + ":" + str(refA_ratio) + "|" + str(altB_ratio) + ":" + str(refB_ratio)
+        freq_ratio_res.append(ratio_data)
+
+        ## marker judgement
+        judgement = marker_judgement(p_value,count_A_alt,count_B_alt,count_A_ref,count_B_ref)
+        judgement_data = 0
+        if judgement == True:
+            judgement_data = str(round(p_value, 4)) + "|" + str(round(altA_ratio, 4)) + "|" + str(round(altB_ratio, 4))
+
+        marker_res.append(judgement_data)
+
         ## Create Rename column dict
         #col_name = column_name[i]
         #new_col_name = col_name + " (altA:refA|altB:refB," + str(count_A_alt) + ":" + str(count_A_ref) + "|" + str(count_B_alt) + ":" + str(count_B_ref) + ")"
@@ -92,15 +111,32 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
     row_pvalue = [p_value_res]
     row_tscore = [odd_ratio_res]
     row_frequency = [frequency_res]
+    row_freq_ratio = [freq_ratio_res]
+    row_marker = [marker_res]
     dataframe_p_value_res = pd.DataFrame(row_pvalue, columns=column_name, index=['p_value'])
     dataframe_odd_ratio_res = pd.DataFrame(row_tscore, columns=column_name, index=['odd_ratio'])
     dataframe_frequency_res = pd.DataFrame(row_frequency, columns=column_name, index=['REF_ALT_Frequency'])
+    dataframe_freq_ratio = pd.DataFrame(row_freq_ratio, columns=column_name, index=['REF_ALT_Frequency_Ratio'])
+    dataframe_marker = pd.DataFrame(row_marker, columns=column_name, index=['marker_judgement'])
 
     #dataframe_p_value_res.rename(columns=column_rename_dict, inplace = True)
     #dataframe_odd_ratio_res.rename(columns=column_rename_dict, inplace = True)
 
 
-    return dataframe_p_value_res, dataframe_odd_ratio_res, dataframe_frequency_res
+    return dataframe_p_value_res, dataframe_odd_ratio_res, dataframe_frequency_res, dataframe_freq_ratio, dataframe_marker
+
+def marker_judgement(p_value,count_A_alt,count_B_alt,count_A_ref,count_B_ref):
+    altA_ratio = count_A_alt / (count_A_alt + count_A_ref)
+    altB_ratio = count_B_alt / (count_B_alt + count_B_ref)
+    refA_ratio = count_A_ref / (count_A_alt + count_A_ref)
+    refB_ratio = count_B_ref / (count_B_alt + count_B_ref)
+
+    if p_value <= 0.05 and altA_ratio > 0.9 and altB_ratio < 0.9:   # altA_ratio ==> we call target deletion ratio, altB_ratio ==> we call non-target deletion ratio
+        true_marker = True
+    else:
+        true_marker = False
+
+    return true_marker
 
 def extract_marker_from_pvalue(dataframe_p_value):
     dataframe_p_value_t = dataframe_p_value.transpose()

@@ -9,8 +9,11 @@ import pandas as df
 # value in actual column should have "R" for resist and "S" for sensitive and "U" for nodata
 # Value in predict column must have "S" for sensitive but for resist can be any stirng. No missing data allow in column
 
-input = "/Users/worawich/Downloads/drug_Pbum.csv"
-output = "/Users/worawich/Downloads/evaluate_drug.csv"
+#input = "/Users/worawich/Downloads/drug_Pbum.csv"
+input = "/Users/worawich/Download_dataset/tb_platform/test_thai_db/drug_compare_thaiDB.csv"
+#output = "/Users/worawich/Downloads/evaluate_drug.csv"
+output = "/Users/worawich/Download_dataset/tb_platform/test_thai_db/evaluate_drug_compare_thaiDB.csv"
+output_confusion_matrix = "/Users/worawich/Download_dataset/tb_platform/test_thai_db/confusion_matrix_drug_compare_thaiDB.csv"
 
 data = df.read_csv(input)
 
@@ -27,8 +30,14 @@ count = 0
 actual_list = list()
 predict_list = list()
 
-report = open(output, "a")
+report = open(output, "w")
 report.write("Drug,Number of sample,Specificity, Sensitivity(Recall),Precission,F score,Accuracy\n")
+
+all_drug = list(data.columns)
+header = ",".join(all_drug)
+report_confusion_matrix = open(output_confusion_matrix, "w")
+report_confusion_matrix.write(header)
+
 for (columnName, columnData) in data.iteritems():
 
     #num_actual_data = 0
@@ -79,7 +88,6 @@ for (columnName, columnData) in data.iteritems():
             elif actual_value == "R":
                 P = P+1
 
-
             if actual_value == "S" and predict_value == "S":
                 TN = TN + 1
             elif actual_value == "R" and predict_value == "S":
@@ -97,7 +105,10 @@ for (columnName, columnData) in data.iteritems():
         else:
             precision = TP/(TP+FP)
 
-        f_score = 2*((precision * sensitivity)/(precision + sensitivity))
+        if precision + sensitivity > 0:
+            f_score = 2*((precision * sensitivity)/(precision + sensitivity))
+        else:
+            f_score = 0
         num_all_sample = TN + FN + TP + FP
         drug = columnName.split(" ")[0]
         report_str = drug + "," + str(num_all_sample) + "," + str(round(specificity,2)) + "," + str(round(sensitivity,2)) + "," + str(round(precision,2)) + "," + str(round(f_score,2)) + "," + str(round(acc,2))

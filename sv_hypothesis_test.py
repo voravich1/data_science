@@ -41,10 +41,11 @@ __status__ = "Development"
 #input = "./test_data/master_extract.txt"
 #input = r'G:\TB_BGI\all_sample_res\BGI_174_combine_extract.txt'
 #input = r'C:\Users\vorav\Downloads\1188_mantaV1_4_combine_extract.txt'
-input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
+#input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
+input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze/sv_master_del_extract.txt"
 #outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/dendogram.pdf"
-outputDir = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/aon_test"
-aonprofiler_summary = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/summary_result.txt"
+outputDir = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze"
+aonprofiler_summary = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze/summary_result.txt"
 #treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.tre"
 #itol_ann = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.itol.txt"
 #pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_fisher_cluster.csv"
@@ -87,7 +88,7 @@ with open(input) as f:
         else:
             dummy_data = data_line.split("\t")
             index.append(dummy_data[0])
-            dummy_core_data = list(map(int,dummy_data[1:]))
+            dummy_core_data = list(map(float,dummy_data[1:]))
             data.append(dummy_core_data)
             #print(line)
 df = pd.DataFrame(data,columns=column,index=index)
@@ -98,6 +99,9 @@ df_t = df.transpose()
 if homo_only == True:
     for (columnName,columnData) in df_t.iteritems():
         df_t.loc[df_t[columnName] < 2, columnName] = 0
+elif homo_only == False:
+    for (columnName,columnData) in df_t.iteritems():
+        df_t.loc[df_t[columnName] > 0, columnName] = 1
 ########################################################
 
 
@@ -114,7 +118,7 @@ Z = linkage(df_t, 'ward')
 #plt.ylabel('distance (Ward)')
 #dn = dendrogram(Z, labels=df_t.index, orientation='left',color_threshold=color_th)
 #plt.savefig(outputDendogram, dpi=1200)
-######################################################################################
+############################################################################ ##########
 
 
 # generate newick string form linkage result and save to .tre file
@@ -243,11 +247,17 @@ with open(aonprofiler_summary) as label_file:
 for key in all_tier_cluster_dict:
     tier = key
     pvalue_csv_file = os.path.join(outputDir, "pvalue_fisher_cluster_tier" + str(tier) + ".csv")
+    oddratio_csv_file = os.path.join(outputDir, "oddratio_cluster_tier" + str(tier) + ".csv")
     freq_csv_file = os.path.join(outputDir, "freq_cluster_tier" + str(tier) + ".csv")
+    freq_ratio_csv_file = os.path.join(outputDir, "freq_ratio_cluster_tier" + str(tier) + ".csv")
+    marker_csv_file = os.path.join(outputDir, "marker_cluster_tier" + str(tier) + ".csv")
+
     cluster_dict = all_tier_cluster_dict[tier]
     list_pvalue_df_res = []
     list_score_df_res = []
     list_freq_df_res = []
+    list_freq_ratio_df_res = []
+    list_marker_df_res = []
 
     for group in cluster_dict:
         combination_name = str(group) + " vs other"
@@ -277,15 +287,19 @@ for key in all_tier_cluster_dict:
             list_pvalue_df_res.append(pvalue_res)
             list_score_df_res.append(score_res) ## list of dataframe of tscore
         else:
-            pvalue_res, score_res, frequency_res = stat_utility.multipleColumnFisherTest(dataframe_groupA, dataframe_groupB)
+            pvalue_res, score_res, frequency_res, freq_ratio_res, marker_res = stat_utility.multipleColumnFisherTest(dataframe_groupA, dataframe_groupB)
 
             pvalue_res.index = [combination_name]
             score_res.index = [combination_name]
             frequency_res.index = [combination_name]
+            freq_ratio_res.index = [combination_name]
+            marker_res.index = [combination_name]
 
             list_pvalue_df_res.append(pvalue_res)
             list_score_df_res.append(score_res) ## list of dataframe of odd ratio
             list_freq_df_res.append(frequency_res)
+            list_freq_ratio_df_res.append(freq_ratio_res)
+            list_marker_df_res.append(marker_res)
 
     if ttest == True:
         pvalue_res_all = pd.concat(list_pvalue_df_res)
@@ -296,9 +310,15 @@ for key in all_tier_cluster_dict:
         pvalue_res_all = pd.concat(list_pvalue_df_res)
         score_res_all = pd.concat(list_score_df_res)
         freq_res_all = pd.concat(list_freq_df_res)
+        freq_ratio_res_all = pd.concat(list_freq_ratio_df_res)
+        marker_res_all = pd.concat(list_marker_df_res)
 
         pvalue_res_all.to_csv(pvalue_csv_file)
+        score_res_all.to_csv(oddratio_csv_file)
         freq_res_all.to_csv(freq_csv_file)
+        freq_ratio_res_all.to_csv(freq_ratio_csv_file)
+        marker_res_all.to_csv(marker_csv_file)
 
+print("Complete")
 ########################################################
 
