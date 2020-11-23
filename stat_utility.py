@@ -35,6 +35,7 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
     odd_ratio_res = list()
     frequency_res = list()
     freq_ratio_res = list()
+    eval_metrices_res = list()
     marker_res = list()
 
     num_A , feature_A = dataframe_popA.shape
@@ -51,10 +52,10 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
         n_array_B = dataframe_popB.iloc[:,i].values
 
         ## create contingency table
-        count_A_alt = 0
-        count_A_ref = 0
-        count_B_alt = 0
-        count_B_ref = 0
+        count_A_alt = 0     # number of sample in A that have alt
+        count_A_ref = 0     # number of sample in A that have ref
+        count_B_alt = 0     # number of sample in B that have alt
+        count_B_ref = 0     # number of sample in B that have ref
 
         for val in n_array_A:
             if val == 0:
@@ -93,12 +94,34 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
         refB_ratio = count_B_ref / (count_B_alt + count_B_ref)
         ratio_data = str(altA_ratio) + ":" + str(refA_ratio) + "|" + str(altB_ratio) + ":" + str(refB_ratio)
         freq_ratio_res.append(ratio_data)
+        ## Evaluation metric calculation
+        ## imagine that popA and popB is our dataset
+        ## popA contain sample that should have deletion (should have all count as altA)
+        ## popB contain sample taht shoul not have deletion (should have all count as refB)
+
+        total_A = count_A_ref + count_A_alt     # consider A as class 1
+        total_B = count_B_ref + count_B_alt     # consider B as class 0
+        TP = count_A_alt    # number of sample in A that found alt (Can say in ML term as actual is alt and predict is also alt)
+        FP = count_B_alt    # number of sample in B that found alt (Can say in ML term as actual is ref and predict is alt)
+        FN = count_A_ref    # number of sample in A that found ref (Can say in ML term as actual is alt and predict is ref)
+        TN = count_B_ref    # number of sample in B that found ref (Can say in ML term as actual is ref and predict is also ref)
+        sensitivity = TP/(TP+FN)
+        specificity = TN/(TN+FP)
+        #if TP+FP == 0:
+        #    precision = int(0.000001)
+        #else:
+        #    precision = TP/(TP+FP)
+
+        #f_score = 2*((precision*sensitivity)/(precision+sensitivity))
+        #evaluation_data = "(sen|spec|pre|f1)" + "(" + str(round(sensitivity),4) + "|" + str(round(specificity),4) + "|" + str(round(precision),4) + "|" + str(round(f_score),4) + ")"
+        evaluation_data = "(sen|spec|pre|f1)" + "(" + str(round(sensitivity, 4)) + "|" + str(round(specificity,4)) + ")"
+        eval_metrices_res.append(evaluation_data)
 
         ## marker judgement
         judgement = marker_judgement(p_value,count_A_alt,count_B_alt,count_A_ref,count_B_ref)
         judgement_data = 0
         if judgement == True:
-            judgement_data = str(round(p_value, 4)) + "|" + str(round(altA_ratio, 4)) + "|" + str(round(altB_ratio, 4))
+            judgement_data = str(round(p_value, 6)) + "|" + str(round(altA_ratio, 6)) + "|" + str(round(altB_ratio, 6))
 
         marker_res.append(judgement_data)
 
@@ -113,17 +136,19 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
     row_frequency = [frequency_res]
     row_freq_ratio = [freq_ratio_res]
     row_marker = [marker_res]
+    row_eval_metrices = [eval_metrices_res]
     dataframe_p_value_res = pd.DataFrame(row_pvalue, columns=column_name, index=['p_value'])
     dataframe_odd_ratio_res = pd.DataFrame(row_tscore, columns=column_name, index=['odd_ratio'])
     dataframe_frequency_res = pd.DataFrame(row_frequency, columns=column_name, index=['REF_ALT_Frequency'])
     dataframe_freq_ratio = pd.DataFrame(row_freq_ratio, columns=column_name, index=['REF_ALT_Frequency_Ratio'])
     dataframe_marker = pd.DataFrame(row_marker, columns=column_name, index=['marker_judgement'])
+    dataframe_eval_metrices = pd.DataFrame(row_eval_metrices, columns=column_name, index=['eval_metrices'])
 
     #dataframe_p_value_res.rename(columns=column_rename_dict, inplace = True)
     #dataframe_odd_ratio_res.rename(columns=column_rename_dict, inplace = True)
 
 
-    return dataframe_p_value_res, dataframe_odd_ratio_res, dataframe_frequency_res, dataframe_freq_ratio, dataframe_marker
+    return dataframe_p_value_res, dataframe_odd_ratio_res, dataframe_frequency_res, dataframe_freq_ratio, dataframe_marker, dataframe_eval_metrices
 
 def marker_judgement(p_value,count_A_alt,count_B_alt,count_A_ref,count_B_ref):
     altA_ratio = count_A_alt / (count_A_alt + count_A_ref)
@@ -132,6 +157,8 @@ def marker_judgement(p_value,count_A_alt,count_B_alt,count_A_ref,count_B_ref):
     refB_ratio = count_B_ref / (count_B_alt + count_B_ref)
 
     if p_value <= 0.05 and altA_ratio > 0.9 and altB_ratio < 0.9:   # altA_ratio ==> we call target deletion ratio, altB_ratio ==> we call non-target deletion ratio
+    #if p_value <= 0.05 and altA_ratio > 0.9 and refB_ratio > 0.9:
+    #if p_value <= 0.05:
         true_marker = True
     else:
         true_marker = False

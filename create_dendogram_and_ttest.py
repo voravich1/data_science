@@ -21,6 +21,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, to_tree
 import stat_utility
+import os
 import numpy as np
 
 __author__ = "Worawich Phornsiricharoenphant"
@@ -35,15 +36,18 @@ __status__ = "Development"
 #input = "./test_data/master_extract.txt"
 #input = r'G:\TB_BGI\all_sample_res\BGI_174_combine_extract.txt'
 #input = r'C:\Users\vorav\Downloads\1188_mantaV1_4_combine_extract.txt'
-input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
-outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/dendogram.pdf"
-treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.tre"
-itol_ann = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.itol.txt"
-pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_fisher_cluster.csv"
-freq_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/freq_cluster.csv"
+#input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
+input = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/snp_del_extract_ready.txt"
+outputfolder = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram"
+outputDendogram = os.path.join(outputfolder,"dendogram.pdf")
+treFile = os.path.join(outputfolder,"scipy_dendrogram.tre")
+itol_ann = os.path.join(outputfolder,"scipy_dendrogram.itol.txt")
+pvalue_csv_file = os.path.join(outputfolder,"pvalue_fisher_cluster.csv")
+freq_csv_file = os.path.join(outputfolder,"freq_cluster.csv")
 
-color_th = 8.5  # this treshold can be adjust it will effect clustering and group coloring on dendrogram
-homo_only = True # Homo flag ==> if True consider homo region by convert hetero value 1 to 0 (Will update better way to handle this later)
+#color_th = 8.5  # this treshold can be adjust it will effect clustering and group coloring on dendrogram (old threshold when we do just del alone)
+color_th = 25
+homo_only = False # Homo flag ==> if True consider homo region by convert hetero value 1 to 0 (Will update better way to handle this later)
 ttest = False
 ## function convert linkage resut to newick file
 # credit https://stackoverflow.com/questions/28222179/save-dendrogram-to-newick-format
@@ -99,7 +103,7 @@ Z = linkage(df_t, 'ward')
 #############################
 
 # Create dedogram plot and save to pdf file
-color_th = 8.5 # this treshold can be ad just it will effect group coloring on dendrogram
+#color_th = 8.5 # this treshold can be ad just it will effect group coloring on dendrogram (old threshold when we do just del alone)
 plt.title('Hierarchical Clustering Dendrogram')
 plt.xlabel('sample index')
 plt.ylabel('distance (Ward)')
@@ -112,8 +116,8 @@ plt.savefig(outputDendogram, dpi=1200)
 tree = to_tree(Z,False)
 newick_string = getNewick(tree, "", tree.dist, leaf_names=df_t.index)
 
-#with open(treFile, "w") as text_file:
-#    text_file.write(newick_string)
+with open(treFile, "w") as text_file:
+    text_file.write(newick_string)
 ###############################################
 
 # Extract cluster group. Make itol annotation for cluster.

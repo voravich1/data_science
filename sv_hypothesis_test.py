@@ -42,14 +42,22 @@ __status__ = "Development"
 #input = r'G:\TB_BGI\all_sample_res\BGI_174_combine_extract.txt'
 #input = r'C:\Users\vorav\Downloads\1188_mantaV1_4_combine_extract.txt'
 #input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
-input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze/sv_master_del_extract.txt"
+input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_criteria_pvalue_alta_altb/sv_master_del_extract.txt"
 #outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/dendogram.pdf"
-outputDir = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze"
-aonprofiler_summary = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze/summary_result.txt"
+outputDir = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_pvalue_altA_altB_addEval"
+aonprofiler_summary = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_criteria_pvalue_alta_altb/summary_result.txt"
 #treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.tre"
 #itol_ann = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.itol.txt"
 #pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_fisher_cluster.csv"
 #freq_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/freq_cluster.csv"
+
+try:
+    os.mkdir(outputDir)
+except OSError:
+    print ("Creation of the directory %s failed" % outputDir)
+else:
+    print ("Successfully created the directory %s " % outputDir)
+
 
 
 color_th = 8.5  # this treshold can be adjust it will effect clustering and group coloring on dendrogram
@@ -251,6 +259,7 @@ for key in all_tier_cluster_dict:
     freq_csv_file = os.path.join(outputDir, "freq_cluster_tier" + str(tier) + ".csv")
     freq_ratio_csv_file = os.path.join(outputDir, "freq_ratio_cluster_tier" + str(tier) + ".csv")
     marker_csv_file = os.path.join(outputDir, "marker_cluster_tier" + str(tier) + ".csv")
+    eval_metrices_csv_file = os.path.join(outputDir, "eval_metric_cluster_tier" + str(tier) + ".csv")
 
     cluster_dict = all_tier_cluster_dict[tier]
     list_pvalue_df_res = []
@@ -258,6 +267,7 @@ for key in all_tier_cluster_dict:
     list_freq_df_res = []
     list_freq_ratio_df_res = []
     list_marker_df_res = []
+    list_eval_metrices_df_res = []
 
     for group in cluster_dict:
         combination_name = str(group) + " vs other"
@@ -287,19 +297,21 @@ for key in all_tier_cluster_dict:
             list_pvalue_df_res.append(pvalue_res)
             list_score_df_res.append(score_res) ## list of dataframe of tscore
         else:
-            pvalue_res, score_res, frequency_res, freq_ratio_res, marker_res = stat_utility.multipleColumnFisherTest(dataframe_groupA, dataframe_groupB)
+            pvalue_res, score_res, frequency_res, freq_ratio_res, marker_res, eval_metrices_res = stat_utility.multipleColumnFisherTest(dataframe_groupA, dataframe_groupB)
 
             pvalue_res.index = [combination_name]
             score_res.index = [combination_name]
             frequency_res.index = [combination_name]
             freq_ratio_res.index = [combination_name]
             marker_res.index = [combination_name]
+            eval_metrices_res.index = [combination_name]
 
             list_pvalue_df_res.append(pvalue_res)
             list_score_df_res.append(score_res) ## list of dataframe of odd ratio
             list_freq_df_res.append(frequency_res)
             list_freq_ratio_df_res.append(freq_ratio_res)
             list_marker_df_res.append(marker_res)
+            list_eval_metrices_df_res.append(eval_metrices_res)
 
     if ttest == True:
         pvalue_res_all = pd.concat(list_pvalue_df_res)
@@ -312,12 +324,14 @@ for key in all_tier_cluster_dict:
         freq_res_all = pd.concat(list_freq_df_res)
         freq_ratio_res_all = pd.concat(list_freq_ratio_df_res)
         marker_res_all = pd.concat(list_marker_df_res)
+        eval_metrices_res_all = pd.concat(list_eval_metrices_df_res)
 
         pvalue_res_all.to_csv(pvalue_csv_file)
         score_res_all.to_csv(oddratio_csv_file)
         freq_res_all.to_csv(freq_csv_file)
         freq_ratio_res_all.to_csv(freq_ratio_csv_file)
         marker_res_all.to_csv(marker_csv_file)
+        eval_metrices_res_all.to_csv(eval_metrices_csv_file)
 
 print("Complete")
 ########################################################
