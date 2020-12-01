@@ -37,17 +37,20 @@ __status__ = "Development"
 #input = r'G:\TB_BGI\all_sample_res\BGI_174_combine_extract.txt'
 #input = r'C:\Users\vorav\Downloads\1188_mantaV1_4_combine_extract.txt'
 #input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
-input = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/snp_del_extract_ready.txt"
-outputfolder = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram"
+#input = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/snp_del_extract_ready.txt"
+#input = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/snp_extract.txt"
+input = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/sv_master_del_extract_ready.txt"
+outputfolder = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/snp_homo_only"
 outputDendogram = os.path.join(outputfolder,"dendogram.pdf")
 treFile = os.path.join(outputfolder,"scipy_dendrogram.tre")
 itol_ann = os.path.join(outputfolder,"scipy_dendrogram.itol.txt")
 pvalue_csv_file = os.path.join(outputfolder,"pvalue_fisher_cluster.csv")
 freq_csv_file = os.path.join(outputfolder,"freq_cluster.csv")
+csv_transform = os.path.join(outputfolder,"transform_extract_data.csv")
 
 #color_th = 8.5  # this treshold can be adjust it will effect clustering and group coloring on dendrogram (old threshold when we do just del alone)
 color_th = 25
-homo_only = False # Homo flag ==> if True consider homo region by convert hetero value 1 to 0 (Will update better way to handle this later)
+homo_only = True # Homo flag ==> if True consider homo region by convert hetero value 1 to 0 (Will update better way to handle this later)
 ttest = False
 ## function convert linkage resut to newick file
 # credit https://stackoverflow.com/questions/28222179/save-dendrogram-to-newick-format
@@ -87,6 +90,7 @@ with open(input) as f:
             #print(line)
 df = pd.DataFrame(data,columns=column,index=index)
 df_t = df.transpose()
+df_t.to_csv(csv_transform, index=True)
 ############################################################
 
 # Check Homo flag, If True we will convert hetero value 1 to 0 (Will update better way to handle this later)

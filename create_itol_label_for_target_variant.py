@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 
 """
+This script has function to create itol annotation label file for deletion
 
+input
+1. Need VCF extract file  same format as use for statistical test for finding marker
+2. Need variantion target file contain chr and start stop position
+    The file has only one column and row contain any variation info
+    Variation info must be in the same format as VCF extract file e.g. chr:start-stop
 
+Noted: variation info can be other format But!! VCF extract file and variation target file must use the same info format
+
+output
+1. specify output folder and script will auto generate .itol.txt annotation file
 
 """
 
@@ -25,7 +35,7 @@ __status__ = "Development"
 
 variant_extract_file = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/snp_del_extract_ready.txt"
 target_variant_file = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/deletion_target.txt"
-outputfolder = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram"
+outputfolder = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/homo_only"
 itol_ann = os.path.join(outputfolder,"variant_label.itol.txt")
 homo_only = True
 
@@ -109,5 +119,3 @@ with open(itol_ann, "w") as text_file:
     for info in varaint_info_for_itol:
         text_file.write(info+"\n")
 ##############################################################################
-
-print()
