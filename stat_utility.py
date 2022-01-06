@@ -81,17 +81,33 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
         ## For more interpretation of the word significant different we may need to observe count of ALT and REF of both popA and B.
         ## In order to interprete that which population prefer ALT or REF
         odd_ratio, p_value = stats.fisher_exact(contingency_table)
-        p_value_res.append(p_value)
+        #p_value_res.append(p_value) change to p-value full report format
         odd_ratio_res.append(odd_ratio)
         #############################
         count_data = " (altA:refA|altB:refB," + str(count_A_alt) + ":" + str(count_A_ref) + "|" + str(count_B_alt) + ":" + str(count_B_ref) + ")"
         frequency_res.append(count_data)
 
         ## ratio calculate
-        altA_ratio = count_A_alt / (count_A_alt + count_A_ref)
-        altB_ratio = count_B_alt / (count_B_alt + count_B_ref)
-        refA_ratio = count_A_ref / (count_A_alt + count_A_ref)
-        refB_ratio = count_B_ref / (count_B_alt + count_B_ref)
+        if (count_A_alt + count_A_ref) != 0:
+            altA_ratio = count_A_alt / (count_A_alt + count_A_ref)
+        else:
+            altA_ratio = 0
+        
+        if (count_B_alt + count_B_ref) != 0:
+            altB_ratio = count_B_alt / (count_B_alt + count_B_ref)
+        else:
+            altB_ratio = 0
+        
+        if (count_A_alt + count_A_ref) != 0 :
+            refA_ratio = count_A_ref / (count_A_alt + count_A_ref)
+        else:
+            refA_ratio = 0
+
+        if (count_B_alt + count_B_ref) != 0:
+            refB_ratio = count_B_ref / (count_B_alt + count_B_ref)
+        else:
+            refB_ratio = 0
+
         ratio_data = str(altA_ratio) + ":" + str(refA_ratio) + "|" + str(altB_ratio) + ":" + str(refB_ratio)
         freq_ratio_res.append(ratio_data)
         ## Evaluation metric calculation
@@ -106,7 +122,7 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
         FN = count_A_ref    # number of sample in A that found ref (Can say in ML term as actual is alt and predict is ref)
         TN = count_B_ref    # number of sample in B that found ref (Can say in ML term as actual is ref and predict is also ref)
         sensitivity = TP/(TP+FN)
-        specificity = TN/(TN+FP)
+        specificity = TN/(TN+FP+0.00000001)
         #if TP+FP == 0:
         #    precision = int(0.000001)
         #else:
@@ -121,10 +137,14 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
         judgement = marker_judgement(p_value,count_A_alt,count_B_alt,count_A_ref,count_B_ref)
         judgement_data = 0
         if judgement == True:
-            judgement_data = str(round(p_value, 6)) + "|" + str(round(altA_ratio, 6)) + "|" + str(round(altB_ratio, 6))
+            judgement_data = str(round(p_value, 6)) + "|" + str(round(altA_ratio, 6)) + "|" + str(round(altB_ratio, 6)) + "|" + str(count_A_alt) + ":" + str(count_A_ref) + "|" + str(count_B_alt) + ":" + str(count_B_ref)
 
         marker_res.append(judgement_data)
 
+        ## new modified pvalue report file format
+        ## change to full report format contain pvalue|frequency_ratio|frequency_count instead of only p-value
+        pvalue_full_report = str(round(p_value, 6)) + "|" + str(round(altA_ratio, 6)) + "|" + str(round(altB_ratio, 6)) + "|" + str(count_A_alt) + ":" + str(count_A_ref) + "|" + str(count_B_alt) + ":" + str(count_B_ref)
+        p_value_res.append(pvalue_full_report)
         ## Create Rename column dict
         #col_name = column_name[i]
         #new_col_name = col_name + " (altA:refA|altB:refB," + str(count_A_alt) + ":" + str(count_A_ref) + "|" + str(count_B_alt) + ":" + str(count_B_ref) + ")"
@@ -152,9 +172,9 @@ def multipleColumnFisherTest(dataframe_popA, dataframe_popB):
 
 def marker_judgement(p_value,count_A_alt,count_B_alt,count_A_ref,count_B_ref):
     altA_ratio = count_A_alt / (count_A_alt + count_A_ref)
-    altB_ratio = count_B_alt / (count_B_alt + count_B_ref)
+    altB_ratio = count_B_alt / (count_B_alt + count_B_ref+0.00000000001)
     refA_ratio = count_A_ref / (count_A_alt + count_A_ref)
-    refB_ratio = count_B_ref / (count_B_alt + count_B_ref)
+    refB_ratio = count_B_ref / (count_B_alt + count_B_ref+0.00000000001)
 
     if p_value <= 0.05 and altA_ratio > 0.9 and altB_ratio < 0.9:   # altA_ratio ==> we call target deletion ratio, altB_ratio ==> we call non-target deletion ratio
     #if p_value <= 0.05 and altA_ratio > 0.9 and refB_ratio > 0.9:

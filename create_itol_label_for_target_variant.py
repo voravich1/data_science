@@ -33,12 +33,23 @@ __email__ = "worawich.ph@gmail.com"
 __status__ = "Development"
 
 
-variant_extract_file = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/snp_del_extract_ready.txt"
-target_variant_file = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/deletion_target.txt"
-outputfolder = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/homo_only"
-itol_ann = os.path.join(outputfolder,"variant_label.itol.txt")
-homo_only = True
-
+#variant_extract_file = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/snp_del_extract_ready.txt"
+#target_variant_file = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/deletion_target.txt"
+#outputfolder = "/Volumes/10TBSeagateBackupPlus/NBT/TB_project/1170_delprofiler/wasna_paper/snp_sv_dendogram/homo_only"
+#variant_extract_file = "/Users/worawich/Downloads/TB_del_paper/manila/nextflow_sv/low_stringency/sv_master_del_extract_delete_del309955.txt"
+#variant_extract_file = "/Users/worawich/Downloads/TB_del_paper/1170_del_analysis_v0036/manta/low_stringency/sv_master_del_extract_delete_del3121935.txt"
+#variant_extract_file = "/Users/worawich/Downloads/TB_del_paper/indian_ocean/analysis/nextflow_sv/low_stringency/sv_master_del_extract.txt"
+variant_extract_file = "/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/sv_master_del_extract_final_sample_set_V2.txt"
+#target_variant_file = "/Users/worawich/Downloads/TB_del_paper/L1_paper_summary_result/deletion_target2.txt"
+#target_variant_file = "/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/del_target_aon_1.txt"
+target_variant_file = "/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/del_target_was_fourth_time.txt"
+#outputfolder = "/Users/worawich/Downloads/TB_del_paper/indian_ocean/analysis/nextflow_sv/low_stringency"
+#outputfolder = "/Users/worawich/Downloads/TB_del_paper/manila/nextflow_sv/low_stringency"
+#outputfolder = "/Users/worawich/Downloads/TB_del_paper/1170_del_analysis_v0036/manta/low_stringency"
+outputfolder = "/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent"
+itol_ann = os.path.join(outputfolder,"variant_label_inc_hetero_target_was_4.itol.txt")
+homo_only = False
+transform_flag = False
 
 first_line = True
 index = []
@@ -87,8 +98,9 @@ if homo_only == True:
     for (columnName, columnData) in df_t_variant.iteritems():
         df_t_variant.loc[df_t_variant[columnName] == 2, columnName] = 1
 else:
-    for (columnName,columnData) in df_t_variant.iteritems():
-        df_t_variant.loc[df_t_variant[columnName] > 0, columnName] = 1
+    if transform_flag == True:
+        for (columnName,columnData) in df_t_variant.iteritems():
+            df_t_variant.loc[df_t_variant[columnName] > 0, columnName] = 1
 
 variant_header = df_t_variant.columns.to_list()
 varaint_info_for_itol = df_t_variant.to_csv(header=None, index=True, sep='\t').split('\n')

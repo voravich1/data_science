@@ -42,14 +42,70 @@ __status__ = "Development"
 #input = r'G:\TB_BGI\all_sample_res\BGI_174_combine_extract.txt'
 #input = r'C:\Users\vorav\Downloads\1188_mantaV1_4_combine_extract.txt'
 #input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/sv_master_del_extract.txt"
-input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_criteria_pvalue_alta_altb/sv_master_del_extract.txt"
+#input = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_criteria_pvalue_alta_altb/sv_master_del_extract.txt"
 #outputDendogram = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/dendogram.pdf"
-outputDir = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_pvalue_altA_altB_addEval"
-aonprofiler_summary = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_criteria_pvalue_alta_altb/summary_result.txt"
+#outputDir = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_pvalue_altA_altB_addEval"
+#aonprofiler_summary = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/all/aon_reanalyze_criteria_pvalue_alta_altb/summary_result.txt"
 #treFile = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.tre"
 #itol_ann = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/scipy_dendrogram.itol.txt"
 #pvalue_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/pvalue_fisher_cluster.csv"
 #freq_csv_file = "/Users/worawich/Downloads/1170_delprofiler/del_analysis/lin1/svtk_batch500/freq_cluster.csv"
+
+#input="/Users/worawich/Downloads/TB_del_paper/manila/nextflow_sv/low_stringency/sv_master_del_extract_delete_del309955_remove_chonagrai_and_mix_sample.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/manila/nextflow_sv/low_stringency/stat_test_homo_aonprofiler_remove_chiangrai_and_mix_sample"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_meta"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/manila/nextflow_ngs/AonProfilerTBCollate/summary_result_intersect_del_extract_remove_chiangrai_and_mix_sample.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/sv_master_del_extract_removeallmixsample.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/stat_test_homo_aonprofiler_removeallmixsample"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_meta"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/sum_summary_removeallmixsample.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/sv_master_del_extract_final_sample_set.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/stat_test_homo_aonprofiler_final_sample_napier_add_u_tier"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_meta"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sum_summary_final_sample_napier_full.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/sv_master_del_extract_final_sample_set.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/stat_test_homo_aonprofiler_final_sample_pp_add_u_tier"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_meta"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sum_summary_final_sample_pp.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/sv_master_del_extract_final_sample_set_V2.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/stat_test_homo_aonprofiler_final_sample_napier_add_u_tier_V2"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_meta"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sum_summary_final_sample_napier_full_V2.txt"
+
+input="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/original_sample_plus_135_manilla/sv_master_del_extract.txt"
+outputDir="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/original_sample_plus_135_manilla/stat_test_homo_aonprofiler_final_sample_napier_add_u_tier"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_meta"
+aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/original_sample_plus_135_manilla/summary_final_plus_manilla_napier_full.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/sv_master_del_extract_final_sample_set_V2.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sv/low_stringent/stat_test_homo_aonprofiler_final_sample_pp_add_u_tier_V2"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_meta"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/1170_x_manilla/analysis/sum_summary_final_sample_pp_V2.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/sv_master_del_extract.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_aonprofiler"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/low_stringency/stat_test_x_homo_meta"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/cryptic_del_analysis_v0036/summary_result_intersect_del_extract.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/indian_ocean/analysis/nextflow_sv/low_stringency/sv_master_del_extract.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/indian_ocean/analysis/nextflow_sv/low_stringency/stat_test_x_homo_aonprofiler"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/indian_ocean/analysis/nextflow_sv/low_stringency/stat_test_x_homo_meta"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/indian_ocean/analysis/nextflow_ngs/AonProfilerTBCollate/summary_result_intersect_del_extract.txt"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/indian_ocean/analysis/nextflow_sv/converted_meta_data_to_summary_res2.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/manila/nextflow_sv/low_stringency/sv_master_del_extract_delete_del309955.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/manila/nextflow_sv/low_stringency/stat_test_x_homo_meta"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/manila/nextflow_sv/low_stringency/stat_test_x_homo_aonprofiler"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/manila/nextflow_sv/converted_meta_data_to_summary_res.txt"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/manila/nextflow_ngs/AonProfilerTBCollate/summary_result_intersect_del_extract.txt"
+
+#input="/Users/worawich/Downloads/TB_del_paper/1170_del_analysis_v0036/manta/low_stringency/sv_master_del_extract_delete_del3121935.txt"
+#outputDir="/Users/worawich/Downloads/TB_del_paper/1170_del_analysis_v0036/manta/low_stringency/stat_test_x_homo_aonprofiler"
+#aonprofiler_summary="/Users/worawich/Downloads/TB_del_paper/1170_del_analysis_v0036/AonProfilerTBCollate/summary_result.txt"
 
 try:
     os.mkdir(outputDir)
@@ -109,7 +165,7 @@ if homo_only == True:
         df_t.loc[df_t[columnName] < 2, columnName] = 0
 elif homo_only == False:
     for (columnName,columnData) in df_t.iteritems():
-        df_t.loc[df_t[columnName] > 0, columnName] = 1
+        df_t.loc[df_t[columnName] > 0, columnName] = 2
 ########################################################
 
 
@@ -215,13 +271,13 @@ index128colors = [
 
 header = True
 all_sample_name_dict = dict()
-all_tier_cluster_dict = dict()
+all_tier_cluster_dict = dict()  # contain 
 with open(aonprofiler_summary) as label_file:
     for line in label_file:
         if header == True:
             header = False
             continue
-        list_info = line.split("\t")
+        list_info = line.splitlines()[0].split("\t")
         sample_name = list_info[0]
         all_lineage_hit_list = list_info[1].split("|")
 
@@ -288,6 +344,12 @@ for key in all_tier_cluster_dict:
         dataframe_groupA = df_t.loc[sample_list_groupA]
         dataframe_groupB = df_t.loc[sample_list_groupB]
 
+        ## export datafaram_groupA to csv file
+        ## this export file contain groupA or target group (target lineage group) event profile
+        group_event_profile_csv_file = os.path.join(outputDir, "event_profile_tier" + str(tier) + "_" + str(group) + ".csv")
+        dataframe_groupA.to_csv(group_event_profile_csv_file)
+        ########
+
         # Do ttest or chi square for this combination
         if ttest == True:
             pvalue_res, score_res = stat_utility.multipleColumnTtest(dataframe_groupA, dataframe_groupB)
@@ -317,7 +379,7 @@ for key in all_tier_cluster_dict:
         pvalue_res_all = pd.concat(list_pvalue_df_res)
         score_res_all = pd.concat(list_score_df_res)
 
-        pvalue_res_all.to_csv(pvalue_csv_file)
+        pvalue_res_all.transpose().to_csv(pvalue_csv_file)
     else:
         pvalue_res_all = pd.concat(list_pvalue_df_res)
         score_res_all = pd.concat(list_score_df_res)
@@ -326,12 +388,12 @@ for key in all_tier_cluster_dict:
         marker_res_all = pd.concat(list_marker_df_res)
         eval_metrices_res_all = pd.concat(list_eval_metrices_df_res)
 
-        pvalue_res_all.to_csv(pvalue_csv_file)
-        score_res_all.to_csv(oddratio_csv_file)
-        freq_res_all.to_csv(freq_csv_file)
-        freq_ratio_res_all.to_csv(freq_ratio_csv_file)
-        marker_res_all.to_csv(marker_csv_file)
-        eval_metrices_res_all.to_csv(eval_metrices_csv_file)
+        pvalue_res_all.transpose().to_csv(pvalue_csv_file)
+        score_res_all.transpose().to_csv(oddratio_csv_file)
+        freq_res_all.transpose().to_csv(freq_csv_file)
+        freq_ratio_res_all.transpose().to_csv(freq_ratio_csv_file)
+        marker_res_all.transpose().to_csv(marker_csv_file)
+        eval_metrices_res_all.transpose().to_csv(eval_metrices_csv_file)
 
 print("Complete")
 ########################################################
